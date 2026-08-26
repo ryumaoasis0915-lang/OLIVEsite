@@ -395,6 +395,10 @@ section:last-of-type{ border-bottom:none; }
 .contact-facts dd{ margin:4px 0 0; }
 .contact-art{ max-width:260px; margin-top:26px; }
 
+.gform-wrap{ background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; padding:6px; }
+.gform-wrap iframe{ display:block; width:100%; border:0; min-height:900px; }
+@media (max-width:640px){ .gform-wrap iframe{ min-height:1150px; } }
+
 .pager{ display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:clamp(34px,5vw,54px) 0; }
 @media (max-width:640px){ .pager{ grid-template-columns:1fr; } }
 .pager a{ display:flex; flex-direction:column; gap:4px; padding:22px 24px; background:var(--card); border:1px solid var(--line); text-decoration:none; transition:transform .28s ease, border-color .28s ease; }
