@@ -652,3 +652,170 @@ section, [id]{ scroll-margin-top:86px; }
 .conv-msg.err{ display:block; background:#fdeaea; color:#8a2020; border:1px solid #e6b3b3; }
 .conv-msg.ok{ display:block; background:var(--olive-pale); color:var(--olive-deep); border:1px solid var(--olive); }
 .hidden{ display:none !important; }
+
+
+/* ============================================================
+   DESIGN REFINEMENT LAYER
+   （デザイン調整のみ。文章・内容は一切変更していません）
+   ============================================================ */
+
+/* ---- 1. 角丸と奥行きのトークン ---- */
+:root{
+  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:24px; --r-pill:999px;
+  --e1:0 1px 2px rgba(14,67,114,.05), 0 3px 10px -3px rgba(14,67,114,.10);
+  --e2:0 2px 5px rgba(14,67,114,.06), 0 16px 34px -14px rgba(14,67,114,.20);
+  --e3:0 5px 12px rgba(14,67,114,.08), 0 34px 64px -26px rgba(14,67,114,.34);
+  --edge:color-mix(in srgb, var(--line) 62%, transparent);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --e1:0 1px 2px rgba(0,0,0,.34), 0 3px 12px -3px rgba(0,0,0,.46);
+  --e2:0 2px 6px rgba(0,0,0,.40), 0 18px 38px -14px rgba(0,0,0,.62);
+  --e3:0 6px 14px rgba(0,0,0,.46), 0 36px 70px -26px rgba(0,0,0,.76);
+} }
+:root[data-theme="dark"]{
+  --e1:0 1px 2px rgba(0,0,0,.34), 0 3px 12px -3px rgba(0,0,0,.46);
+  --e2:0 2px 6px rgba(0,0,0,.40), 0 18px 38px -14px rgba(0,0,0,.62);
+  --e3:0 6px 14px rgba(0,0,0,.46), 0 36px 70px -26px rgba(0,0,0,.76);
+}
+
+/* ---- 2. 文字組みの微調整 ---- */
+h1,h2,h3,h4{ letter-spacing:.012em; }
+.hero h1, .page-head-band h1, .quote-band h2{ letter-spacing:.005em; line-height:1.38; }
+.section-head h2{ line-height:1.42; }
+.eyebrow{ opacity:.94; }
+
+/* ---- 3. ボタン：ピル型＋やわらかい影 ---- */
+.btn{ border-radius:var(--r-pill); padding:14px 30px; letter-spacing:.045em;
+      transition:transform .22s cubic-bezier(.2,.8,.2,1), background .24s ease, color .24s ease, border-color .24s ease, box-shadow .28s ease; }
+.btn-primary{ box-shadow:0 6px 18px -8px rgba(79,99,41,.55); }
+.btn-primary:hover{ transform:translateY(-3px); box-shadow:0 18px 34px -14px rgba(79,99,41,.62); }
+.btn-ghost{ background:color-mix(in srgb, var(--card) 70%, transparent); border-color:var(--line-strong); backdrop-filter:blur(4px); }
+.btn-ghost:hover{ transform:translateY(-3px); border-color:var(--olive-deep); box-shadow:var(--e2); }
+.contact-form-btn{ margin-top:30px; }
+
+/* ---- 4. カード全般：角丸＋段階的な影 ---- */
+.gate, .benefit, .step3, .eco-card, .ask, .panel-card, .pager a{
+  border-radius:var(--r-md);
+  border-color:var(--edge);
+  box-shadow:var(--e1);
+  transition:transform .34s cubic-bezier(.2,.8,.2,1), box-shadow .34s ease, border-color .34s ease;
+}
+.gate:hover, .benefit:hover, .step3:hover, .eco-card:hover, .ask:hover{
+  transform:translateY(-7px); box-shadow:var(--e3); border-color:color-mix(in srgb, var(--olive) 40%, var(--edge));
+}
+.gate, .benefit{ overflow:hidden; }
+.gate::before, .benefit::before{ width:4px; border-radius:var(--r-pill); }
+
+.panel-card{ border-left-width:5px; border-radius:var(--r-md); }
+.step3{ border-radius:var(--r-md); }
+.steps3{ gap:0; }
+.eco-card{ border-top-width:4px; }
+
+
+/* ---- 4b. 残りのカード群も同じ質感にそろえる ---- */
+.body-card, .phase-card, .qs, .valley, .layers, .valley-conclusion{
+  border-radius:var(--r-md);
+}
+.body-card, .phase-card, .qs{
+  border-color:var(--edge); box-shadow:var(--e1);
+  transition:transform .32s cubic-bezier(.2,.8,.2,1), box-shadow .32s ease, border-color .32s ease;
+}
+.body-card:hover, .phase-card:hover, .qs:hover{
+  transform:translateY(-6px); box-shadow:var(--e3);
+}
+.qs{ border-left-width:4px; }
+.phase-card{ border-top-width:5px; }
+.valley{ overflow:hidden; box-shadow:var(--e1); border-color:var(--edge); }
+.layers{ overflow:hidden; box-shadow:var(--e2); }
+.layer{ border-color:transparent; }
+
+/* ---- 5. グリッド型のセル群（1px罫線を角丸パネルへ） ---- */
+.trivia-strip, .stat-grid{
+  border-radius:var(--r-md); overflow:hidden;
+  border-color:var(--edge); box-shadow:var(--e1);
+}
+
+/* ---- 6. タグ・チップ：オリーブ系のピルに統一 ---- */
+.news-item .tag{
+  border-radius:var(--r-pill);
+  border:1px solid color-mix(in srgb, var(--olive) 34%, transparent);
+  background:color-mix(in srgb, var(--olive-pale) 62%, transparent);
+  color:var(--olive-deep);
+  font-weight:700; padding:5px 13px;
+}
+/* news.js に tag が無いときの空ボックスを出さない */
+.news-item .tag:empty, .article-meta .tag:empty{ display:none; }
+.init .sub span{ border-color:color-mix(in srgb, var(--navy) 22%, transparent); }
+
+/* ---- 7. お知らせ一覧：行全体をやわらかく反応させる ---- */
+.news-list{ gap:2px; }
+.news-item{
+  padding:20px 18px; border-top:none; border-radius:var(--r-sm);
+  transition:background .28s ease, transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
+  position:relative;
+}
+.news-item::before{
+  content:""; position:absolute; left:18px; right:18px; top:0; height:1px;
+  background:var(--line);
+}
+.news-list > :first-child::before{ display:none; }
+.news-list > :last-child{ border-bottom:none; }
+a.news-item:hover{
+  padding-left:18px;
+  background:color-mix(in srgb, var(--card) 88%, transparent);
+  box-shadow:var(--e2); transform:translateY(-2px);
+}
+a.news-item:hover::before, a.news-item:hover + .news-item::before{ opacity:0; }
+
+/* ---- 8. ページ送り ---- */
+.pager a{ padding:26px 28px; box-shadow:var(--e1); }
+.pager a:hover{ transform:translateY(-5px); box-shadow:var(--e2); border-color:color-mix(in srgb, var(--olive) 50%, var(--edge)); }
+
+/* ---- 9. 写真：角丸を大きめに ---- */
+.photo-band, .photo-split .ps-img, .photo-plain img{ border-radius:var(--r-lg); }
+.photo-band, .photo-split .ps-img{ box-shadow:var(--e2); }
+.article-body img{ border-radius:var(--r-md); box-shadow:var(--e2); }
+
+/* ---- 10. 見出し帯・引用帯の質感 ---- */
+.page-head-band{
+  background:
+    radial-gradient(760px 300px at 78% -10%, color-mix(in srgb, var(--olive-pale) 52%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb,var(--sea-pale) 62%,transparent), transparent);
+  border-bottom-color:var(--edge);
+}
+.quote-band::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(620px 320px at 20% 0%, rgba(195,224,138,.16), transparent 68%);
+}
+
+/* ---- 11. 連絡先パネル・フォーム ---- */
+.contact-panel{ border-radius:var(--r-lg); box-shadow:var(--e2); }
+.contact-facts dd{ line-height:1.85; }
+
+/* ---- 12. タブ・小さなUI ---- */
+.tab-btn{ box-shadow:var(--e1); }
+.tab-btn:hover{ box-shadow:var(--e2); }
+.tab-btn[aria-selected="true"]{ box-shadow:0 12px 26px -12px rgba(10,91,168,.75); }
+.back-to-top{ box-shadow:var(--e2); }
+.back-to-top:hover{ transform:translateY(-3px); }
+
+/* ---- 13. 記事本文 ---- */
+.article-body blockquote{ border-radius:var(--r-sm); border-left-width:4px; }
+.article-body table{ border-radius:var(--r-sm); overflow:hidden; box-shadow:var(--e1); }
+.article-body th, .article-body td{ border-color:var(--edge); }
+
+/* ---- 14. フォーカスリング（キーボード操作時） ---- */
+a:focus-visible, button:focus-visible{
+  outline:2px solid var(--olive); outline-offset:3px; border-radius:var(--r-xs);
+}
+
+/* ---- 15. スクロールバー ---- */
+@supports (scrollbar-color: auto){
+  html{ scrollbar-color:color-mix(in srgb, var(--olive) 55%, transparent) transparent; scrollbar-width:thin; }
+}
+
+/* ---- 16. 動きを減らす設定を尊重 ---- */
+@media (prefers-reduced-motion: reduce){
+  .btn:hover, .gate:hover, .benefit:hover, .step3:hover, .eco-card:hover,
+  .ask:hover, .pager a:hover, a.news-item:hover, .back-to-top:hover{ transform:none; }
+}
