@@ -819,3 +819,183 @@ a:focus-visible, button:focus-visible{
   .btn:hover, .gate:hover, .benefit:hover, .step3:hover, .eco-card:hover,
   .ask:hover, .pager a:hover, a.news-item:hover, .back-to-top:hover{ transform:none; }
 }
+
+
+/* ============================================================
+   MOTION & ATMOSPHERE LAYER
+   （動きと質感のみ。文章・内容は一切変更していません）
+   ============================================================ */
+
+/* ---- M0. アニメーション可能なカスタムプロパティ ---- */
+@property --pz{ syntax:"<number>"; inherits:false; initial-value:1.06; }
+@property --spot{ syntax:"<number>"; inherits:false; initial-value:0; }
+
+/* ---- M1. 画面全体の環境光（ゆっくり漂う） ---- */
+body::before{
+  content:""; position:fixed; inset:-10%; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(38vw 34vw at 12% 18%, color-mix(in srgb, var(--olive) 16%, transparent), transparent 62%),
+    radial-gradient(34vw 30vw at 88% 32%, color-mix(in srgb, var(--navy) 13%, transparent), transparent 64%),
+    radial-gradient(30vw 28vw at 50% 88%, color-mix(in srgb, var(--olive-light) 15%, transparent), transparent 66%);
+  opacity:.55; filter:blur(10px);
+  animation:ambientDrift 34s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift{
+  0%  { transform:translate3d(0,0,0) scale(1); }
+  50% { transform:translate3d(1.5%,-1.8%,0) scale(1.06); }
+  100%{ transform:translate3d(-1.6%,1.4%,0) scale(1.03); }
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body::before{ opacity:.4; } }
+:root[data-theme="dark"] body::before{ opacity:.4; }
+
+/* ---- M2. 微細なグレイン（紙のような質感） ---- */
+body::after{
+  content:""; position:fixed; inset:0; z-index:400; pointer-events:none; opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body::after{ opacity:.05; } }
+:root[data-theme="dark"] body::after{ opacity:.05; }
+
+/* ---- M3. カードのスポットライト追従 ---- */
+.gate, .benefit, .body-card, .eco-card, .phase-card, .qs, .step3, .ask, .pager a, .trivia-card{
+  background-repeat:no-repeat;
+  background-image:radial-gradient(240px circle at var(--mx,50%) var(--my,-30%),
+                   color-mix(in srgb, var(--olive) calc(var(--spot,0) * 20%), transparent), transparent 68%);
+  transition:transform .34s cubic-bezier(.2,.8,.2,1), box-shadow .34s ease,
+             border-color .34s ease, --spot .45s ease, background-color .3s ease;
+}
+.gate:hover, .benefit:hover, .body-card:hover, .eco-card:hover,
+.phase-card:hover, .qs:hover, .step3:hover, .ask:hover, .pager a:hover, .trivia-card:hover{ --spot:1; }
+.step3.s-olive, .phase-card:nth-child(3){
+  background-image:radial-gradient(240px circle at var(--mx,50%) var(--my,-30%),
+                   rgba(255,255,255,calc(var(--spot,0) * .14)), transparent 68%);
+}
+
+/* ---- M4. 写真の視差＋ゆるやかなズーム ---- */
+.photo-band img, .photo-split .ps-img img{
+  transform:translate3d(0, var(--par,0px), 0) scale(var(--pz));
+  transition:--pz 1.2s cubic-bezier(.2,.7,.3,1);
+  will-change:transform;
+}
+.photo-band:hover img, .photo-split .ps-img:hover img{ --pz:1.13; }
+
+/* ---- M5. 見出しの下方向リビール ---- */
+@media (prefers-reduced-motion: no-preference){
+  html:not(.no-js) .section-head.reveal h2{
+    clip-path:inset(0 -12% 100% -12%);
+    transition:clip-path 1.05s cubic-bezier(.22,.85,.25,1) .06s;
+  }
+  html:not(.no-js) .section-head.reveal.in h2{ clip-path:inset(-18% -12% -18% -12%); }
+  html:not(.no-js) .section-head.reveal.in-fast h2{ transition:none; }
+}
+.no-js .section-head h2{ clip-path:none !important; }
+
+/* ---- M6. スクロール進捗バーに光を ---- */
+#scrollProgress{
+  height:3px;
+  background:linear-gradient(90deg, var(--olive) 0%, var(--olive-light) 42%, var(--navy) 100%);
+  box-shadow:0 0 12px -1px color-mix(in srgb, var(--olive) 70%, transparent);
+}
+
+/* ---- M7. トップへ戻るボタンに進捗リング ---- */
+.back-to-top{ position:fixed; }
+.back-to-top::before{
+  content:""; position:absolute; inset:-5px; border-radius:50%; pointer-events:none;
+  background:conic-gradient(var(--olive-light) calc(var(--p,0) * 1%), transparent 0);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  opacity:.9;
+}
+
+/* ---- M8. 舞い落ちるオリーブの葉（装飾・読み上げ対象外） ---- */
+.petals{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+.petals i{
+  position:absolute; top:-8%; display:block; width:17px; height:10px;
+  border-radius:0 100% 0 100%;
+  background:var(--olive); opacity:0; transform-origin:center;
+  animation:petalFall linear infinite;
+}
+.petals i:nth-child(even){ background:var(--olive-light); width:13px; height:8px; }
+.petals i:nth-child(3n){ background:var(--olive-deep); opacity:0; }
+@keyframes petalFall{
+  0%   { opacity:0; transform:translate3d(0,-10px,0) rotate(0deg); }
+  12%  { opacity:.55; }
+  80%  { opacity:.4; }
+  100% { opacity:0; transform:translate3d(var(--drift,40px), 116vh, 0) rotate(540deg); }
+}
+.quote-band .petals i{ background:var(--olive-light); opacity:.5; }
+
+/* ---- M9. カード枠のグラデーション発光 ---- */
+.gate::before, .benefit::before{
+  background:linear-gradient(180deg, var(--olive-light), var(--olive) 45%, var(--navy));
+}
+
+/* ---- M10. ナビゲーションの微調整 ---- */
+nav.links a::after{ height:2px; border-radius:2px; box-shadow:0 0 8px -2px var(--olive); }
+header.site{ transition:box-shadow .35s ease, background .35s ease; }
+header.site.stuck{ box-shadow:0 10px 30px -22px rgba(14,67,114,.55); }
+
+/* ---- M11. ページ遷移をなめらかに ---- */
+body{ transition:opacity .3s ease, filter .3s ease, transform .3s ease; }
+body.leaving{ opacity:0; filter:blur(3px); transform:translateY(-6px); }
+
+/* ---- M12. ボタンのマグネット挙動を滑らかに ---- */
+.btn{ will-change:transform; }
+
+/* ---- M13. 数字カウンタの質感 ---- */
+.stat-num, .qs .val{ font-feature-settings:"tnum" 1; }
+
+/* ---- M14. 動きを減らす設定を最優先で尊重 ---- */
+@media (prefers-reduced-motion: reduce){
+  body::before{ animation:none; }
+  .petals{ display:none !important; }
+  .photo-band img, .photo-split .ps-img img{
+    transform:none !important; transition:none !important;
+  }
+  .section-head h2{ clip-path:none !important; }
+  body.leaving{ filter:none; transform:none; }
+}
+
+
+/* ---- M15. 登場アニメーションに奥行きとフォーカスを ---- */
+@media (prefers-reduced-motion: no-preference){
+  html:not(.no-js) .reveal{
+    filter:blur(7px);
+    transform:translateY(22px) scale(.988);
+    transition:opacity .85s cubic-bezier(.2,.75,.25,1),
+               transform .85s cubic-bezier(.2,.75,.25,1),
+               filter .85s cubic-bezier(.2,.75,.25,1),
+               clip-path 1.05s cubic-bezier(.22,.85,.25,1);
+  }
+  html:not(.no-js) .reveal.in{ filter:blur(0); transform:none; }
+  html:not(.no-js) .reveal.in-fast{ filter:none !important; transition:none !important; }
+
+  @keyframes riseIn3d{
+    from{ opacity:0; transform:perspective(760px) translateY(26px) rotateX(7deg) scale(.975); filter:blur(6px); }
+    to  { opacity:1; transform:none; filter:blur(0); }
+  }
+  html:not(.no-js) .stagger.in > *{ animation:riseIn3d .78s cubic-bezier(.2,.75,.25,1) forwards; }
+  html:not(.no-js) .page-enter > *{ animation:riseIn3d .92s cubic-bezier(.2,.75,.25,1) forwards; }
+  html:not(.no-js) .stagger.in-fast > *{ animation-duration:.001ms !important; }
+}
+.no-js .reveal{ filter:none !important; transform:none !important; }
+
+/* ---- M16. ヒーローのスクロール離脱 ---- */
+.hero-grid{ will-change:transform, opacity; }
+html:not(.no-js) .hero-grid{
+  opacity:var(--heroFade, 1);
+  transform:translate3d(0, var(--heroRise, 0px), 0) scale(var(--heroZoom, 1));
+}
+
+/* ---- M17. 見出し帯もスクロールで静かに沈む ---- */
+html:not(.no-js) .page-head-band .ph-inner{
+  transform:translate3d(0, var(--headRise, 0px), 0);
+  opacity:var(--headFade, 1);
+}
+
+@media (prefers-reduced-motion: reduce){
+  html .hero-grid, html .page-head-band .ph-inner{
+    opacity:1 !important; transform:none !important;
+  }
+  html .reveal{ filter:none !important; }
+}

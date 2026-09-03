@@ -241,3 +241,166 @@ var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   list.innerHTML = html;
   list.classList.add('in');
 })();
+
+/* ---- 記事ページの日付・タグを news.js と常に一致させる ----
+   news.js側でtag（カテゴリ名）やdateを直しても、記事本体のHTMLを
+   1本ずつ書き換えなくて済むように、ここで上書きする。 */
+(function(){
+  var meta = document.querySelector('.article-meta');
+  if(!meta) return;
+  var data = (typeof NEWS !== 'undefined' && Object.prototype.toString.call(NEWS) === '[object Array]') ? NEWS : [];
+  if(!data.length) return;
+  var file = location.pathname.split('/').pop();
+  var item = null;
+  for (var i = 0; i < data.length; i++){
+    if (data[i] && data[i].url && data[i].url.split('/').pop() === file){ item = data[i]; break; }
+  }
+  if(!item) return;
+  var d = meta.querySelector('.date'), t = meta.querySelector('.tag');
+  if(d && item.date) d.textContent = item.date;
+  if(t && item.tag)  t.textContent = item.tag;
+})();
+
+/* ============================================================
+   MOTION LAYER  ―  動きの制御（内容は変更しません）
+   ============================================================ */
+
+/* ---- 1. カードのスポットライト追従 ---- */
+(function(){
+  if(REDUCE || !window.matchMedia('(hover:hover)').matches) return;
+  var sel = '.gate,.benefit,.body-card,.eco-card,.phase-card,.qs,.step3,.ask,.pager a,.trivia-card';
+  var pending = null;
+  document.addEventListener('pointermove', function(e){
+    var card = e.target.closest ? e.target.closest(sel) : null;
+    if(!card) return;
+    if(pending) return;
+    pending = requestAnimationFrame(function(){
+      pending = null;
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (((e.clientX - r.left)/r.width)*100).toFixed(1) + '%');
+      card.style.setProperty('--my', (((e.clientY - r.top)/r.height)*100).toFixed(1) + '%');
+    });
+  }, { passive:true });
+})();
+
+/* ---- 2. ボタンのマグネット挙動 ---- */
+(function(){
+  if(REDUCE || !window.matchMedia('(hover:hover)').matches) return;
+  var btns = Array.prototype.slice.call(document.querySelectorAll('.btn'));
+  btns.forEach(function(b){
+    var raf = null;
+    b.addEventListener('pointermove', function(e){
+      if(raf) return;
+      raf = requestAnimationFrame(function(){
+        raf = null;
+        var r = b.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width/2)) / (r.width/2);
+        var dy = (e.clientY - (r.top + r.height/2)) / (r.height/2);
+        b.style.transform = 'translate(' + (dx*5).toFixed(2) + 'px,' + (dy*3 - 3).toFixed(2) + 'px)';
+      });
+    }, { passive:true });
+    b.addEventListener('pointerleave', function(){ b.style.transform = ''; });
+    b.addEventListener('blur', function(){ b.style.transform = ''; });
+  });
+})();
+
+/* ---- 3. 写真の視差 ---- */
+(function(){
+  if(REDUCE) return;
+  var imgs = Array.prototype.slice.call(
+    document.querySelectorAll('.photo-band img, .photo-split .ps-img img'));
+  if(!imgs.length) return;
+  var live = [], t = false;
+  var io = new IntersectionObserver(function(en){
+    en.forEach(function(e){
+      var i = live.indexOf(e.target);
+      if(e.isIntersecting){ if(i < 0) live.push(e.target); }
+      else if(i >= 0) live.splice(i,1);
+    });
+    up();
+  }, { rootMargin:'80px 0px' });
+  imgs.forEach(function(im){ io.observe(im); });
+  function up(){
+    var vh = window.innerHeight;
+    live.forEach(function(im){
+      var r = im.getBoundingClientRect();
+      var c = (r.top + r.height/2 - vh/2) / vh;      /* -1 .. 1 */
+      var shift = Math.max(-1, Math.min(1, c)) * -13; /* px */
+      im.style.setProperty('--par', shift.toFixed(1) + 'px');
+    });
+    t = false;
+  }
+  window.addEventListener('scroll', function(){ if(!t){ t = true; requestAnimationFrame(up); } }, { passive:true });
+  window.addEventListener('resize', up);
+  up();
+})();
+
+/* ---- 4. 舞い落ちるオリーブの葉（装飾） ---- */
+(function(){
+  if(REDUCE) return;
+  var hosts = Array.prototype.slice.call(document.querySelectorAll('.hero, .quote-band, .page-head-band'));
+  if(!hosts.length) return;
+  hosts.forEach(function(host, hi){
+    var box = document.createElement('div');
+    box.className = 'petals';
+    box.setAttribute('aria-hidden','true');
+    var n = host.classList.contains('hero') ? 9 : (host.classList.contains('page-head-band') ? 5 : 6);
+    for(var i = 0; i < n; i++){
+      var leaf = document.createElement('i');
+      var dur = 14 + Math.random()*13;
+      leaf.style.left = (Math.random()*96).toFixed(1) + '%';
+      leaf.style.animationDuration = dur.toFixed(1) + 's';
+      leaf.style.animationDelay = (-Math.random()*dur).toFixed(1) + 's';
+      leaf.style.setProperty('--drift', ((Math.random()*150) - 60).toFixed(0) + 'px');
+      box.appendChild(leaf);
+    }
+    if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    host.appendChild(box);
+  });
+})();
+
+/* ---- 5. トップへ戻るボタンの進捗リング＋ヘッダーの影 ---- */
+(function(){
+  var btn = document.getElementById('backToTop');
+  var head = document.querySelector('header.site');
+  if(!btn && !head) return;
+  var t = false;
+  function up(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    if(btn) btn.style.setProperty('--p', p.toFixed(1));
+    if(head) head.classList.toggle('stuck', h.scrollTop > 12);
+    t = false;
+  }
+  window.addEventListener('scroll', function(){ if(!t){ t = true; requestAnimationFrame(up); } }, { passive:true });
+  up();
+})();
+
+/* ---- 6. ヒーロー／見出し帯のスクロール連動 ---- */
+(function(){
+  if(REDUCE) return;
+  var hero = document.querySelector('.hero-grid');
+  var head = document.querySelector('.page-head-band .ph-inner');
+  if(!hero && !head) return;
+  var t = false;
+  function up(){
+    var y = window.scrollY || document.documentElement.scrollTop;
+    var vh = window.innerHeight;
+    if(hero){
+      var p = Math.max(0, Math.min(1, y / (vh * 0.85)));
+      hero.style.setProperty('--heroFade', (1 - p * 0.85).toFixed(3));
+      hero.style.setProperty('--heroRise', (p * 54).toFixed(1) + 'px');
+      hero.style.setProperty('--heroZoom', (1 - p * 0.03).toFixed(4));
+    }
+    if(head){
+      var q = Math.max(0, Math.min(1, y / (vh * 0.7)));
+      head.style.setProperty('--headFade', (1 - q * 0.8).toFixed(3));
+      head.style.setProperty('--headRise', (q * 38).toFixed(1) + 'px');
+    }
+    t = false;
+  }
+  window.addEventListener('scroll', function(){ if(!t){ t = true; requestAnimationFrame(up); } }, { passive:true });
+  window.addEventListener('resize', up);
+  up();
+})();
