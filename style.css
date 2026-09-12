@@ -1259,3 +1259,48 @@ nav.links a:last-child.active{ background:var(--olive-deep); color:#fff; }
 
 /* ---- V11. 取組の階段図・谷の図に薄いグラデーション ---- */
 .section-art svg rect[fill="var(--sea-pale)"], .section-art svg path[fill="var(--sea-pale)"]{ fill:color-mix(in srgb, var(--sea-pale) 80%, var(--olive-pale)); }
+
+
+/* ---- V12. 「OLIVEとは」冒頭の橋のイラスト（画像版） ---- */
+figure.bridge-art{ margin:0 auto clamp(26px,4vw,42px); max-width:940px; border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--e2); position:relative; }
+figure.bridge-art img{ display:block; width:100%; height:auto; }
+figure.bridge-art::after{ content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit; box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, transparent); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) figure.bridge-art img{ filter:brightness(.9) saturate(.95); } }
+:root[data-theme="dark"] figure.bridge-art img{ filter:brightness(.9) saturate(.95); }
+
+
+/* ---- V13. 本文の折り返し：文節単位の早い改行をやめ、行を埋める ---- */
+p, li, dd, .lbl, .tx, .say, .d, .ph-lede, .hero-lede, .section-head p, .init p,
+.step3 p, .gate p, .benefit p, .trivia-card .tx, .eco-card p, .ask p, .body-card p, .phase-card p, .qs .lbl, .panel-card .say, .photo-split p, .contact-panel .note{
+  word-break:normal; overflow-wrap:anywhere; line-break:strict; text-wrap:pretty;
+}
+.section-head p, .page-head-band .ph-lede, .init p, .photo-split p, .contact-panel .note{ max-width:46em; }
+.hero-lede{ max-width:36em; }
+
+/* ---- V14. 「4つの物語」：カーソルを合わせると対応するイラストに切り替わる ---- */
+.story-stage{ position:relative; aspect-ratio:900/250; max-width:880px; margin:0 auto clamp(26px,4vw,42px); }
+.story-art{ position:absolute; inset:0; opacity:0; transform:translateY(10px) scale(.985); pointer-events:none;
+  transition:opacity .55s cubic-bezier(.2,.75,.25,1), transform .55s cubic-bezier(.2,.75,.25,1); }
+.story-art svg{ display:block; width:100%; height:100%; overflow:visible; }
+.story-art.is-active{ opacity:1; transform:none; }
+/* 切り替わるたびに線を描き直す */
+.story-art [pathLength]{ stroke-dasharray:1; stroke-dashoffset:1; }
+.story-art.is-active [pathLength]{ animation:drawIn 1.3s cubic-bezier(.4,.1,.2,1) forwards; }
+.story-art .fade-late{ opacity:0; transition:opacity .6s ease .55s; }
+.story-art.is-active .fade-late{ opacity:1; }
+.no-js .story-art:first-child{ opacity:1; transform:none; }
+.no-js .story-art [pathLength]{ stroke-dashoffset:0 !important; }
+.no-js .story-art .fade-late{ opacity:1; }
+
+.trivia-card{ cursor:pointer; outline:none; position:relative; transition:background .3s ease, box-shadow .3s ease; }
+.trivia-card::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg, var(--gold), var(--olive)); transform:scaleX(0); transform-origin:left; transition:transform .4s cubic-bezier(.2,.8,.2,1); }
+.trivia-card.is-active{ background:color-mix(in srgb, var(--olive-pale) 55%, var(--card)); }
+.trivia-card.is-active::before{ transform:scaleX(1); }
+.trivia-card.is-active .ic{ color:var(--olive-deep); }
+.trivia-card:focus-visible{ box-shadow:inset 0 0 0 2px var(--olive); }
+@media (prefers-reduced-motion: reduce){
+  .story-art{ transition:none; } .story-art [pathLength]{ animation:none !important; stroke-dashoffset:0 !important; } .story-art .fade-late{ transition:none; }
+}
+
+.section-head{ max-width:min(100%, 1000px); }
+.section-head h2{ max-width:26em; }

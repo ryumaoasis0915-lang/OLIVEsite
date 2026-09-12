@@ -166,6 +166,7 @@ https://<ユーザー名>.github.io/<リポジトリ名>/convert.html
 | ファイル名 | 使われている場所 |
 |---|---|
 | `kodai-workshop.jpg` | トップページ |
+| `bridge.jpg` | OLIVEとは（冒頭の「死の谷に橋を架ける」イラスト） |
 | `univ-network.jpg` | OLIVEとは |
 | `roundtable.jpg` | あなたにとってのOLIVE |
 | `olive-wreath.jpg` | メンバー |
@@ -174,7 +175,7 @@ https://<ユーザー名>.github.io/<リポジトリ名>/convert.html
 
 💡 画像は**横1600px程度・300KB以下**が目安です。大きすぎるとページが重くなります。
 
-⚠️ 人物が写っている4枚（`kodai-workshop.jpg` `roundtable.jpg` `fieldwork.jpg` `dx-class.jpg`）はAI生成のイメージ画像で、キャプションにその旨を記載しています。実際の活動写真に差し替えた際は、`※ 本画像は活動のイメージです。` の一文を削除してください。`univ-network.jpg` と `olive-wreath.jpg` はサイト用に描いたイラストです。
+⚠️ 人物が写っている4枚（`kodai-workshop.jpg` `roundtable.jpg` `fieldwork.jpg` `dx-class.jpg`）はAI生成のイメージ画像で、キャプションにその旨を記載しています。実際の活動写真に差し替えた際は、`※ 本画像は活動のイメージです。` の一文を削除してください。`bridge.jpg`・`univ-network.jpg`・`olive-wreath.jpg` はイラストです。
 
 ---
 
@@ -240,7 +241,7 @@ convert.js          そのプログラム
 mammoth.min.js      Word読み込み用ライブラリ（触らないでください）
 
 【写真】
-kodai-workshop.jpg / univ-network.jpg / roundtable.jpg
+kodai-workshop.jpg / bridge.jpg / univ-network.jpg / roundtable.jpg
 olive-wreath.jpg / fieldwork.jpg / dx-class.jpg
 ```
 

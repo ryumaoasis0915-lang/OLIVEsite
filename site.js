@@ -404,3 +404,42 @@ var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.addEventListener('resize', up);
   up();
 })();
+
+/* ---- 7. 「4つの物語」：カードに合わせてイラストを切り替える ---- */
+(function(){
+  var stage = document.getElementById('storyStage');
+  if(!stage) return;
+  var arts  = Array.prototype.slice.call(stage.querySelectorAll('.story-art'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.trivia-card[data-story]'));
+  if(!arts.length || !cards.length) return;
+  var current = '1', timer = null, touched = false;
+  function show(id){
+    if(id === current) return;
+    current = id;
+    arts.forEach(function(a){ a.classList.toggle('is-active', a.getAttribute('data-story') === id); });
+    cards.forEach(function(c){ c.classList.toggle('is-active', c.getAttribute('data-story') === id); });
+  }
+  cards.forEach(function(c){
+    var id = c.getAttribute('data-story');
+    c.addEventListener('mouseenter', function(){ touched = true; stop(); show(id); });
+    c.addEventListener('focusin',    function(){ touched = true; stop(); show(id); });
+    c.addEventListener('click',      function(){ touched = true; stop(); show(id); });
+    c.addEventListener('touchstart', function(){ touched = true; stop(); show(id); }, { passive:true });
+  });
+  cards[0].classList.add('is-active');
+  /* 触れられるまでは、ゆっくり自動で巡回する */
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+  function start(){
+    if(REDUCE || touched || timer) return;
+    timer = setInterval(function(){
+      var n = (parseInt(current, 10) % arts.length) + 1;
+      show(String(n));
+    }, 5200);
+  }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if(e.isIntersecting) start(); else stop(); });
+    }, { threshold:.35 });
+    io.observe(stage);
+  } else { start(); }
+})();
