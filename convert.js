@@ -84,11 +84,16 @@
 
         /* 先頭の h1 を記事タイトルとして取り出す */
         var title = '';
+        var titleFallback = false;
         var firstH1 = tmp.querySelector('h1');
         if (firstH1) { title = firstH1.textContent.trim(); firstH1.parentNode.removeChild(firstH1); }
         if (!title) {
           var firstP = tmp.querySelector('p');
-          if (firstP && firstP.textContent.trim()) title = firstP.textContent.trim().slice(0, 60);
+          if (firstP && firstP.textContent.trim()) {
+            title = firstP.textContent.trim().slice(0, 60);
+            firstP.parentNode.removeChild(firstP); /* 本文側に重複して残さない */
+            titleFallback = true;
+          }
         }
         if (!title) title = file.name.replace(/\.docx$/i, '');
 
@@ -134,8 +139,14 @@
         refresh();
 
         var warn = (result.messages || []).filter(function (x) { return x.type === 'warning'; });
-        say('変換できました。内容を確認して「記事ファイルをダウンロード」を押してください。'
-            + (warn.length ? '（Wordの一部の書式は簡略化されました）' : ''), 'ok');
+        if (titleFallback) {
+          say('変換できました。⚠ タイトルの見出しスタイル（「表題」または「見出し1」）が見つからなかったため、'
+              + '最初の段落をそのままタイトルにしました。文が途中で切れて見える場合は、下の「タイトル」欄を修正するか、'
+              + 'Word側で見出しの段落に「表題」スタイルを設定してから読み込み直してください。', 'err');
+        } else {
+          say('変換できました。内容を確認して「記事ファイルをダウンロード」を押してください。'
+              + (warn.length ? '（Wordの一部の書式は簡略化されました）' : ''), 'ok');
+        }
         editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }).catch(function (err) {
         say('変換に失敗しました：' + (err && err.message ? err.message : err), 'err');
